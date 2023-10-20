@@ -33,12 +33,46 @@ async function run() {
 
     const productCollection = client.db('productDB').collection('product');
 
+    const mycart=client.db('mycart').collection('cart');
+
+
+
     app.post('/product', async(req,res)=>{
         const newProduct = req.body;
        console.log(newProduct);
        const result = await productCollection.insertOne(newProduct);
        res.send(result);
     })
+
+    app.get("/product", async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/product/:id", async (req, res) => {
+      const id=req.params.id;
+     const query={
+      _id : new ObjectId(id)
+     }
+      const result = await productCollection.findOne(query) ;
+      res.send(result);
+    });
+
+
+
+    app.post('/cart', async(req,res)=>{
+      const newcart = req.body;
+     
+     const result = await mycart.insertOne(newcart);
+     res.send(result);
+  })
+
+  app.get("/cart", async (req, res) => {
+    const cursor = mycart.find();
+    const result = await cursor.toArray();
+    res.send(result);
+  });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
